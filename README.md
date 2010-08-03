@@ -13,18 +13,18 @@ Plover is a capistrano plugin, so just install it like any other rails plugin an
 Plover uses a simple yaml file to configure options, here is a quick example:
 
 
-  aws_access_key_id: XXXXXXXXXX
-  aws_secret_access_key: XXXXXXXXXXXXXXXXXXX
-  servers:
-    db:
-      flavor: m1.small
-      image: ami-2d4aa444
-    db:
-      flavor: m1.small
-      image: ami-2d4aa444
-    web:
-      flavor: m1.small
-      image: ami-2d4aa444
+    aws_access_key_id: XXXXXXXXXX
+    aws_secret_access_key: XXXXXXXXXXXXXXXXXXX
+    servers:
+      db:
+        flavor: m1.small
+        image: ami-2d4aa444
+      db:
+        flavor: m1.small
+        image: ami-2d4aa444
+      web:
+        flavor: m1.small
+        image: ami-2d4aa444
 
 
 Plover will use this configuration to spin up and write out the config/plover_servers.yml file, which contains the server id and dns name of the instance.
