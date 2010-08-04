@@ -1,3 +1,3 @@
 require 'fog'
-require 'plover/connection'
-#require 'plover/servers'
+require 'lib/plover/connection'
+require 'lib/plover/servers'
