@@ -10,7 +10,7 @@ Plover is a capistrano plugin, so just install it like any other rails plugin an
 
 ### Configuring Plover
 
-Plover uses a simple yaml file to configure options, here is a quick example:
+Plover uses a simple yaml file (config/plover.yml) to configure options, here is a quick example:
 
 
     aws_access_key_id: XXXXXXXXXX
