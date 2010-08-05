@@ -1,8 +1,8 @@
-require 'plover'
+require 'lib/plover'
 require 'pathname'
 set :rails_root, Pathname.new(ENV['RAILS_ROOT'] || Dir.pwd)
 set :plover_yml_path, rails_root.join('config', 'plover.yml')
-set :plover_servers_yml_path, rails_root.join('config', 'plover_servers.yml')
+set :plover_cloud_config_path, rails_root.join('config', 'cloud-config.txt')
 
 set :plover_yml do
   if plover_yml_path.exist?
@@ -10,16 +10,6 @@ set :plover_yml do
     YAML::load(plover_yml_path.read)
   else
     puts "Missing #{plover_yml_path}"
-    exit(1)
-  end
-end
-
-set :plover_servers_yml do
-  if plover_servers_yml_path.exist?
-    require 'yaml'
-    YAML::load(plover_servers_yml_path.read)
-  else
-    puts "Missing #{plover_servers_yml_path}"
     exit(1)
   end
 end
@@ -45,49 +35,38 @@ namespace :plover do
   desc "Provision servers at EC2 using Plover"
   task :provision do
     configure_plover
-    ec2_servers = {}
-    connection = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
-    servers.each do |server|
-      server = connection.servers.create(:flavor_id => server["flavor"], :image_id => server["image"], :groups => ["default", "ssh"], :user_data => File.read("config/cloud-config.txt"))
-      server.wait_for { ready? }
-      puts "#{type} server started as instance #{server.id}"
-
-      if ec2_servers[type].nil?
-        ec2_servers[type] = [server_properties(server)]
-      else
-        ec2_servers[type] << server_properties(server)
-      end
-    end
-    save_server_info(ec2_servers)
+    plover = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
+    plover.provision_servers(servers)
   end
 
-  desc "List servers at EC2 using Plover"
+  desc "List servers at EC2 started by Plover"
   task :list do
     configure_plover
+    plover = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
+    puts plover.running_servers.inspect
+  end
+  
+  desc "List servers at EC2 started by Plover"
+  task :list_fog do
+    configure_plover
+    plover = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
+    puts plover.servers.inspect
+  end
+  
+  desc "List servers at EC2 using Plover"
+  task :list_roles do
+    configure_plover
     connection = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
-    puts connection.servers.inspect
+    Plover::Connection.load_roles(plover_servers_yml)
+    puts "Roles: #{roles.inspect}"
   end
   
   desc "Shutdown servers at EC2 using Plover"
   task :shutdown do
     configure_plover
-    connection = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
-    ec2_servers_yml.each do |server_role, servers_list|
-      servers_list.each do |server_info|
-        response = connection.servers.get(server_info[:server_id]).destroy
-        puts "Server #{server_info[:server_id]} shutdown" if response
-      end
-    end
+    plover = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
+    plover.shutdown_servers
   end
   
 end
 
-def save_server_info(servers)
-  File.open('config/plover_servers.yml', 'w') do |out|
-    out.write(servers.to_yaml)
-  end
-end
-
-def server_properties(server)
-  {:server_id => server.id, :dns_name => server.dns_name}
-end
