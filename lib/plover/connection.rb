@@ -18,6 +18,15 @@ module Plover
       servers.shutdown
     end
     
+    def servers
+      @connection.servers
+    end
+    
+    def running_servers
+      servers = Plover::Servers.new(self)
+      servers.running_servers
+    end
+    
   end
 
 end
