@@ -2,14 +2,15 @@ require 'spec_helper'
 
 describe Plover::Servers do
   
-  it "should raise an error when missing a username and api key" do
+  it "should raise an error when missing a connection" do
     lambda {
       Plover::Servers.new
     }.should raise_error(ArgumentError)
   end
   
-  it "should create an ec2 connection when given a proper username and api key" do
-    Plover::Servers.new("connection", {:image => 1, :flavor => "m1.small"})
+  it "should create a plover servers object when given a connection and server specs hash" do
+    servers = Plover::Servers.new("connection", [{:image_id => 1, :flavor_id => "m1.small"}])
+    servers.class.should == Plover::Servers
   end
   
 end

@@ -24,7 +24,14 @@ module Plover
     
     def running_servers
       servers = Plover::Servers.new(self)
-      servers.running_servers
+      servers.server_list.each do |server|
+        puts "Server #{server.server_id} is #{server.state} at #{server.dns_name} for #{server.role}"
+      end
+    end
+    
+    def server_list
+      servers = Plover::Servers.new(self)
+      servers.server_list
     end
     
   end

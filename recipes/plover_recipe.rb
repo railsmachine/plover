@@ -22,11 +22,11 @@ task :configure_plover do
 end
 
 desc "[internal]: populate capistrano with settings from plover_servers.yml"
-task :configure_roles do
-  plover_servers_yml.each do |server_role, servers_list|
-    servers_list.each do |server_info|
-      role server_role.to_sym, server_info[:dns_name]
-    end
+task :configure_plover_roles do
+  configure_plover
+  plover = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
+  plover.server_list.each do |server|
+    role server.role.to_sym, server.dns_name
   end
 end
 
@@ -43,7 +43,7 @@ namespace :plover do
   task :list do
     configure_plover
     plover = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
-    puts plover.running_servers.inspect
+    plover.running_servers
   end
   
   desc "List servers at EC2 started by Plover"
@@ -56,8 +56,7 @@ namespace :plover do
   desc "List servers at EC2 using Plover"
   task :list_roles do
     configure_plover
-    connection = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
-    Plover::Connection.load_roles(plover_servers_yml)
+    configure_plover_roles
     puts "Roles: #{roles.inspect}"
   end
   
