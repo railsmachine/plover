@@ -41,6 +41,10 @@ module Plover
       set_attributes_from_server_object(@fog_server)
     end
     
+    def update_from_running
+      set_attributes_from_server_object(ec2_server)
+    end
+    
     private
     
     def set_attributes(server_hash)

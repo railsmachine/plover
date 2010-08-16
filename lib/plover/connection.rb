@@ -8,8 +8,8 @@ module Plover
       @connection = Fog::AWS::EC2.new(:aws_access_key_id => id, :aws_secret_access_key => key)
     end
     
-    def provision_servers(server_specs)
-      servers = Plover::Servers.new(self, server_specs)
+    def provision_servers
+      servers = Plover::Servers.new(self, load_server_info["servers"])
       servers.provision
     end
     
@@ -34,6 +34,21 @@ module Plover
       servers.server_list
     end
     
+    
+    private
+    
+    def load_server_info
+      plover_servers_yml_path = file_root().join("config", "plover.yml")
+      if plover_servers_yml_path.exist?
+        YAML::load(plover_servers_yml_path.read)
+      else
+        {}
+      end
+    end
+    
+    def file_root
+      Pathname.new(ENV['RAILS_ROOT'] || Dir.pwd)
+    end
   end
 
 end

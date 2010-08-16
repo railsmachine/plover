@@ -1,4 +1,4 @@
-require 'lib/plover'
+require  File.join(File.dirname(__FILE__), '../lib/plover')
 require 'pathname'
 set :rails_root, Pathname.new(ENV['RAILS_ROOT'] || Dir.pwd)
 set :plover_yml_path, rails_root.join('config', 'plover.yml')
@@ -24,8 +24,8 @@ end
 desc "[internal]: populate capistrano with settings from plover_servers.yml"
 task :configure_plover_roles do
   configure_plover
-  plover = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
-  plover.server_list.each do |server|
+  connection = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
+  connection.server_list.each do |server|
     role server.role.to_sym, server.dns_name
   end
 end
@@ -35,22 +35,22 @@ namespace :plover do
   desc "Provision servers at EC2 using Plover"
   task :provision do
     configure_plover
-    plover = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
-    plover.provision_servers(servers)
+    connection = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
+    connection.provision_servers
   end
 
   desc "List servers at EC2 started by Plover"
   task :list do
     configure_plover
-    plover = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
-    plover.running_servers
+    connection = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
+    connection.running_servers
   end
   
   desc "List servers at EC2 started by Plover"
   task :list_fog do
     configure_plover
-    plover = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
-    puts plover.servers.inspect
+    connection = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
+    puts connection.servers.inspect
   end
   
   desc "List servers at EC2 using Plover"
@@ -63,8 +63,8 @@ namespace :plover do
   desc "Shutdown servers at EC2 using Plover"
   task :shutdown do
     configure_plover
-    plover = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
-    plover.shutdown_servers
+    connection = Plover::Connection.new(aws_access_key_id, aws_secret_access_key)
+    connection.shutdown_servers
   end
   
 end
