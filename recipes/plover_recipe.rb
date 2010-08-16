@@ -60,6 +60,11 @@ namespace :plover do
     puts "Roles: #{roles.inspect}"
   end
   
+  desc "Upload plover_servers.yml to the EC2 servers"
+  task :upload_server_yaml do
+    upload("config/plover_servers.yml", "/etc/plover_servers.yml")
+  end
+  
   desc "Shutdown servers at EC2 using Plover"
   task :shutdown do
     configure_plover
