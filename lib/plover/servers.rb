@@ -54,7 +54,7 @@ module Plover
 
     def yaml_output(servers)
       server_array = servers.collect do |server|
-        {:server_id => server.server_id, :dns_name => server.dns_name, :role => server.role, :name => server.name}
+        {:server_id => server.server_id, :dns_name => server.dns_name, :role => server.role, :name => server.name, :internal_ip => server.internal_ip}
       end
       server_array.to_yaml
     end
