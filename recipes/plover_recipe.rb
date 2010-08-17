@@ -62,7 +62,7 @@ namespace :plover do
   
   desc "Upload plover_servers.yml to the EC2 servers"
   task :upload_server_yaml do
-    upload("config/plover_servers.yml", "/etc/plover_servers.yml")
+    upload("config/plover_servers.yml", "#{shared_path}/plover_servers.yml")
   end
   
   desc "Shutdown servers at EC2 using Plover"
