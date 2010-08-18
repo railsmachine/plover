@@ -13,5 +13,5 @@ end
 def stub_fog(response = {})
   servers = stub(:get => stub(response))
   connection = stub(:servers => servers)
+  Plover::Connection.expects(:connection).at_least_once.returns(connection)
 end
-

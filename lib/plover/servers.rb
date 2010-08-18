@@ -2,14 +2,13 @@ module Plover
   
   class Servers
     
-    def initialize(connection, server_specs = {})
+    def initialize(server_specs = {})
       @server_specs ||= server_specs
       if server_specs.empty?
-        @servers = load_server_info.collect {|specs| Plover::Server.new(connection, specs)}
+        @servers = load_server_info.collect {|specs| Plover::Server.new(cspecs)}
       else
-        @servers = server_specs.collect {|specs| Plover::Server.new(connection, specs)}
+        @servers = server_specs.collect {|specs| Plover::Server.new(specs)}
       end
-      @connection = connection
     end
     
     def provision

@@ -4,8 +4,7 @@ module Plover
     
     attr_accessor :server_id, :name, :dns_name, :role, :name, :internal_ip, :flavor_id, :image_id
     
-    def initialize(connection, server_specs)
-      @connection = connection
+    def initialize(server_specs)
       @specs = server_specs
       @fog_server = nil
       set_attributes(@specs)
@@ -15,7 +14,7 @@ module Plover
       if running?
         false
       else
-        @fog_server = @connection.servers.create(:flavor_id => flavor_id, :image_id => image_id, :groups => ["default", "ssh"], :user_data => File.read("config/cloud-config.txt"))
+        @fog_server = Plover::Connection.connection.servers.create(:flavor_id => flavor_id, :image_id => image_id, :groups => ["default", "ssh"], :user_data => File.read("config/cloud-config.txt"))
         true
       end
     end
@@ -59,7 +58,7 @@ module Plover
     end
     
     def ec2_server
-      @connection.servers.get(server_id)
+      Plover::Connection.connection.servers.get(server_id)
     end
     
   end

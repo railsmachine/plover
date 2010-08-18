@@ -4,19 +4,18 @@ describe Plover::Connection do
   
   it "should raise an error when missing a username and api key" do
     lambda {
-      Plover::Connection.new
+      Plover::Connection.establish_connection
     }.should raise_error(ArgumentError)
   end
   
   it "should create an ec2 connection when given a proper username and api key" do
     Fog::AWS::EC2.expects(:new).returns(true)
-    Plover::Connection.new("user", "key")
+    Plover::Connection.establish_connection("user", "key")
   end
   
   describe "with a connection" do
     before do
       Fog::AWS::EC2.stubs(:new).returns(true)
-      @plover = Plover::Connection.new("user", "key")
     end
     
     describe ".provision_servers" do
@@ -24,7 +23,7 @@ describe Plover::Connection do
         servers = mock()
         Plover::Servers.expects(:new).returns(servers)
         servers.expects(:provision)
-        @plover.provision_servers()
+        Plover::Connection.provision_servers
       end
     end
 
@@ -33,12 +32,10 @@ describe Plover::Connection do
         servers = mock()
         Plover::Servers.expects(:new).returns(servers)
         servers.expects(:shutdown)
-        @plover.shutdown_servers()
+        Plover::Connection.shutdown_servers
       end
     end
 
   end
-  
-  
   
 end

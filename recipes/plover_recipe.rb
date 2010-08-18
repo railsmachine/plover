@@ -73,4 +73,3 @@ namespace :plover do
   end
   
 end
-
