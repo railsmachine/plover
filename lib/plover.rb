@@ -5,6 +5,7 @@ unless $LOAD_PATH.any? {|path| File.expand_path(path) == here }
   $LOAD_PATH.unshift(here)
 end
 
+require 'plover/files'
 require 'plover/connection'
 require 'plover/servers'
 require 'plover/server'
