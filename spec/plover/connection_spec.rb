@@ -24,7 +24,7 @@ describe Plover::Connection do
         servers = mock()
         Plover::Servers.expects(:new).returns(servers)
         servers.expects(:provision)
-        @plover.provision_servers({:flavor => "m1.small"})
+        @plover.provision_servers()
       end
     end
 
