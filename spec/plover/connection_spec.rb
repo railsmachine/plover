@@ -1,7 +1,13 @@
 require 'spec_helper'
 
 describe Plover::Connection do
-  
+
+  it "should raise an error when accessing connection before establishing" do
+    lambda {
+      Plover::Connection.connection
+    }.should raise_error(Plover::Connection::NotConnected)
+  end
+
   it "should raise an error when missing a username and api key" do
     lambda {
       Plover::Connection.establish_connection
