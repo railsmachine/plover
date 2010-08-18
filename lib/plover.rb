@@ -3,7 +3,9 @@ unless $LOAD_PATH.any? {|path| File.expand_path(path) == here }
   $LOAD_PATH.unshift(here)
 end
 
-require 'plover/files'
-require 'plover/connection'
-require 'plover/servers'
-require 'plover/server'
+module Plover
+  autoload :Files,      'plover/files'
+  autoload :Connection, 'plover/connection'
+  autoload :Servers,    'plover/servers'
+  autoload :Server,     'plover/server'
+end
