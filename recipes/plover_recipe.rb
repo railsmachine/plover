@@ -25,7 +25,7 @@ desc "[internal]: populate capistrano with settings from plover_servers.yml"
 task :configure_plover_roles do
   configure_plover
   Plover::Connection.establish_connection(aws_access_key_id, aws_secret_access_key)
-  Plover::Connection.connection.server_list.each do |server|
+  Plover::Connection.server_list.each do |server|
     role server.role.to_sym, server.dns_name
   end
 end
@@ -36,21 +36,21 @@ namespace :plover do
   task :provision do
     configure_plover
     Plover::Connection.establish_connection(aws_access_key_id, aws_secret_access_key)
-    Plover::Connection.connection.provision_servers
+    Plover::Connection.provision_servers
   end
 
   desc "List servers at EC2 started by Plover"
   task :list do
     configure_plover
     Plover::Connection.establish_connection(aws_access_key_id, aws_secret_access_key)
-    Plover::Connection.connection.running_servers
+    Plover::Connection.running_servers
   end
   
   desc "List servers at EC2 started by Plover"
   task :list_fog do
     configure_plover
     Plover::Connection.establish_connection(aws_access_key_id, aws_secret_access_key)
-    puts Plover::Connection.connection.servers.inspect
+    puts Plover::Connection.servers.inspect
   end
   
   desc "List servers at EC2 using Plover"
@@ -69,7 +69,7 @@ namespace :plover do
   task :shutdown do
     configure_plover
     Plover::Connection.establish_connection(aws_access_key_id, aws_secret_access_key)
-    Plover::Connection.connection.shutdown_servers
+    Plover::Connection.shutdown_servers
   end
   
 end
