@@ -11,7 +11,11 @@ module Plover
     def by_role(role)
       @yaml_hash.select {|server| server[:role] == role}
     end
-  
+
+    def by_roles(*roles)
+      @yaml_hash.select {|server| roles.include?(server[:role])}
+    end
+
     def write
       File.open(@path, 'w') do |out|
         puts "Writing out #{@path}"
