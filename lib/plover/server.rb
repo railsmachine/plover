@@ -2,7 +2,7 @@ module Plover
   
   class Server
     
-    attr_accessor :server_id, :name, :dns_name, :role, :name, :internal_ip, :flavor_id, :image_id
+    attr_accessor :server_id, :name, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id
     
     def initialize(server_specs)
       @specs = server_specs
@@ -53,7 +53,7 @@ module Plover
     end
     
     def set_attributes_from_server_object(server)
-      hash = {:server_id => server.id, :flavor_id => server.flavor_id, :image_id => server.image_id, :dns_name => server.dns_name, :internal_ip => server.ip_address}
+      hash = {:server_id => server.id, :flavor_id => server.flavor_id, :image_id => server.image_id, :dns_name => server.dns_name, :external_ip => server.ip_address, :internal_ip => server.private_ip_address}
       set_attributes(hash)
     end
     
