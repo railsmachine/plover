@@ -15,8 +15,8 @@ describe Plover::Connection do
   end
   
   it "should create an ec2 connection when given a proper username and api key" do
-    Fog::AWS::EC2.expects(:new).returns(true)
-    Plover::Connection.establish_connection("user", "key")
+    Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key').returns(true)
+    Plover::Connection.establish_connection('aws_access_key_id' => 'user', 'aws_secret_access_key' => 'key')
   end
   
   describe "with a connection" do

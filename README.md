@@ -15,15 +15,27 @@ Plover uses a simple yaml file (config/plover.yml) to configure options, here is
 
     aws_access_key_id: XXXXXXXXXX
     aws_secret_access_key: XXXXXXXXXXXXXXXXXXX
+    groups:
+      - my_app
+      - ssh
     servers:
-    - flavor: m1.small
-      image: ami-2d4aa444
+    - flavor_id: m1.small
+      image_id: ami-2d4aa444
       role: db
       name: db1.staging.railsmachine.com
-    - flavor: m1.small
-      image: ami-2d4aa444
+      group: db
+    - flavor_id: m1.small
+      image_id: ami-2d4aa444
       role: db
       name: db2.staging.railsmachine.com
+      group: db
+    - flavor_id: m1.small
+      image_id: ami-2d4aa444
+      role: app
+      name: app1.staging.railsmachine.com
+      groups:
+        - app
+        - web
 
 
 Plover will use this configuration to spin up and write out the config/plover_servers.yml file, which contains the server id and dns name of the instance.  Plover also uses cloud-init to configure the instance on boot, here is an example cloud-init to run apt-get upgrade and do a custom command:

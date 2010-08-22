@@ -2,7 +2,7 @@ module Plover
   
   class Server
     
-    attr_accessor :server_id, :name, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id
+    attr_accessor :server_id, :name, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id, :groups, :group
     
     def initialize(server_specs)
       @specs = server_specs
@@ -14,11 +14,17 @@ module Plover
       if running?
         false
       else
-        @fog_server = Plover::Connection.connection.servers.create(:flavor_id => flavor_id, :image_id => image_id, :groups => ["default", "ssh"], :user_data => File.read("config/cloud-config.txt"))
+        @fog_server = Plover::Connection.connection.servers.create(:flavor_id => flavor_id, :image_id => image_id, :groups => groups, :user_data => File.read("config/cloud-config.txt"))
         true
       end
     end
-    
+
+    def groups
+      server_groups = (@groups || [])
+      server_groups << @group if @group
+      (Plover::Connection.groups + server_groups)
+    end
+
     def running?
       ec2_server.state == "running" unless ec2_server.nil?
     end
