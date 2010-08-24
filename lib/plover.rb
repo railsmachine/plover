@@ -4,6 +4,8 @@ unless $LOAD_PATH.any? {|path| File.expand_path(path) == here }
 end
 
 module Plover
+  require 'erb'
+  
   autoload :Files,      'plover/files'
   autoload :Connection, 'plover/connection'
   autoload :Servers,    'plover/servers'

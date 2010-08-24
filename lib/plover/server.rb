@@ -14,7 +14,7 @@ module Plover
       if running?
         false
       else
-        @fog_server = Plover::Connection.connection.servers.create(:flavor_id => flavor_id, :image_id => image_id, :groups => groups, :user_data => File.read("config/cloud-config.txt"))
+        @fog_server = Plover::Connection.connection.servers.create(:flavor_id => flavor_id, :image_id => image_id, :groups => groups, :user_data => cloud_config)
         true
       end
     end
@@ -48,6 +48,12 @@ module Plover
     
     def update_from_running
       set_attributes_from_server_object(ec2_server)
+    end
+    
+    def cloud_config
+      b = binding
+      @cloud_config = ERB.new(File.read("config/cloud-config.txt"))
+      @cloud_config.result(b)
     end
     
     private
