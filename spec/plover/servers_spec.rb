@@ -10,7 +10,7 @@ describe Plover::Servers do
   describe 'provisioning' do
     describe "with customized security groups" do
       before :each do
-        Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key').returns(true)
+        Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key', :region => 'us-east-1').returns(true)
         Plover::Connection.establish_connection('aws_access_key_id' => 'user', 'aws_secret_access_key' => 'key', 'groups' => %w(default ssh))
         @servers = Plover::Servers.new([
           {:image_id => 1, :flavor_id => "m1.small", :group => 'app'},
@@ -30,7 +30,7 @@ describe Plover::Servers do
 
     describe "with default security groups" do
       before :each do
-        Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key').returns(true)
+        Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key', :region => 'us-east-1').returns(true)
         Plover::Connection.establish_connection('aws_access_key_id' => 'user', 'aws_secret_access_key' => 'key')
         @servers = Plover::Servers.new([
           {:image_id => 1, :flavor_id => "m1.small"},

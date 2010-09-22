@@ -8,17 +8,19 @@ module Plover
 
     class << self
 
+      attr_reader :config, :region
+
       def establish_connection(config)
         @config = config
-        @connection = Fog::AWS::EC2.new(:aws_access_key_id => config['aws_access_key_id'], :aws_secret_access_key => config['aws_secret_access_key'])
+        @connection = Fog::AWS::EC2.new(:aws_access_key_id => config['aws_access_key_id'], :aws_secret_access_key => config['aws_secret_access_key'], :region => region)
       end
 
       def establish_connection_with_config_file(path)
         establish_connection(YAML.load(ERB.new(File.read(path)).result))
       end
 
-      def config
-        @config
+      def region
+        config['region'] || 'us-east-1'
       end
 
       def groups

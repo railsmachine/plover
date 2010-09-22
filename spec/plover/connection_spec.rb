@@ -15,15 +15,20 @@ describe Plover::Connection do
   end
 
   it "should be able to connect from the yaml file" do
-    Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key').returns(true)
+    Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key', :region => 'us-east-1').returns(true)
     Plover::Connection.establish_connection_with_config_file("#{File.dirname(__FILE__)}/../../config/plover.yml")
   end
 
   it "should create an ec2 connection when given a proper username and api key" do
-    Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key').returns(true)
+    Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key', :region => 'us-east-1').returns(true)
     Plover::Connection.establish_connection('aws_access_key_id' => 'user', 'aws_secret_access_key' => 'key')
   end
-  
+
+  it "can connect to another region" do
+    Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key', :region => 'us-west-1').returns(true)
+    Plover::Connection.establish_connection('aws_access_key_id' => 'user', 'aws_secret_access_key' => 'key', 'region' => 'us-west-1')
+  end
+
   describe "with a connection" do
     before do
       Fog::AWS::EC2.stubs(:new).returns(true)
