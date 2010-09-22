@@ -2,9 +2,22 @@ require 'spec_helper'
 
 describe Plover::Servers do
 
-  it "should create a plover servers object when given a connection and server specs hash" do
-    servers = Plover::Servers.new([{:image_id => 1, :flavor_id => "m1.small"}])
-    servers.class.should == Plover::Servers
+  describe "when initializing a server list" do
+
+    before :each do
+      stub_fog(:state => "terminated", :to_hash => { :state => "terminated", :dns_name => 'test_terminated.cloud.com' })
+      hash = [{:name => 'test_terminated', :server_id => 'foo', :state => 'running', :dns_name => "test_terminated.cloud.com"}]
+      File.open(Plover::Servers.file_root.join('config', 'plover_servers.yml'), 'w') { |f| f.write(hash.to_yaml)}
+      @servers = Plover::Servers.new([{:name => 'test_terminated', :role => 'test', :image_id => 1, :flavor_id => "m1.small"}])
+    end
+
+    it "should merge the provided with the running config" do
+      @servers.server_list.first.dns_name.should == 'test_terminated.cloud.com'
+    end
+
+    it "should load the data from the cloud api to ensure freshness" do
+      @servers.server_list.first.state.should == 'terminated'
+    end
   end
 
   describe 'provisioning' do
@@ -12,11 +25,11 @@ describe Plover::Servers do
       before :each do
         Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key', :region => 'us-east-1').returns(true)
         Plover::Connection.establish_connection('aws_access_key_id' => 'user', 'aws_secret_access_key' => 'key', 'groups' => %w(default ssh))
+        stub_fog(:state => "terminated", :to_hash => {})
         @servers = Plover::Servers.new([
           {:name => 'foo1', :image_id => 1, :flavor_id => "m1.small", :group => 'app'},
           {:name => 'foo2', :image_id => 1, :flavor_id => "m1.small", :groups => %w(riak)}
         ])
-        stub_fog(:state => "terminated")
       end
       it ".boot should start an instance in the appropriate security groups" do
         @servers.server_list.each do |server|
@@ -50,11 +63,11 @@ describe Plover::Servers do
       before :each do
         Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key', :region => 'us-east-1').returns(true)
         Plover::Connection.establish_connection('aws_access_key_id' => 'user', 'aws_secret_access_key' => 'key')
+        stub_fog(:state => "terminated", :to_hash => {})
         @servers = Plover::Servers.new([
           {:image_id => 1, :flavor_id => "m1.small"},
           {:image_id => 1, :flavor_id => "m1.small"}
         ])
-        stub_fog(:state => "terminated")
       end
       it ".boot should start an instance in the default security group" do
         @servers.server_list.each do |server|
@@ -65,6 +78,34 @@ describe Plover::Servers do
         @servers.provision
       end
     end
+
+    describe "when a server was last seen in a booting state, but has since started" do
+      before :each do
+        Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key', :region => 'us-east-1').returns(true)
+        Plover::Connection.establish_connection('aws_access_key_id' => 'user', 'aws_secret_access_key' => 'key')
+
+        hash = [{:name => 'test_running', :server_id => 'foo', :state => 'running', :dns_name => "test_running.cloud.com"}]
+        File.open(Plover::Servers.file_root.join('config', 'plover_servers.yml'), 'w') { |f| f.write(hash.to_yaml)}
+
+        stub_fog(:state => "running", :to_hash => { :state => "running", :dns_name => 'test_running.cloud.com' })
+
+        @servers = Plover::Servers.new([
+          {:name => "test_running", :image_id => 1, :flavor_id => "m1.small"},
+        ])
+
+      end
+
+      it "should detect server is running" do
+        @servers.server_list.first.state.should == 'running'
+      end
+
+      it ".boot should not start duplicate instances" do
+        Plover.connection.servers.expects(:create).never
+        @servers.provision
+      end
+
+    end
+
   end
 
 end

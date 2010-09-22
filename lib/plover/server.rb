@@ -37,7 +37,6 @@ module Plover
     end
 
     def state
-      puts @state
       if cloud_server.nil?
         @state || "not found"
       else
@@ -50,13 +49,16 @@ module Plover
     end
 
     def update_once_running
-      @booting_server.wait_for { ready? }
+      @booting_server.wait_for { ready? } if @booting_server
       @state = nil
       update_from_running
     end
 
     def update_from_running
-      set_attributes_from_server_object(cloud_server)
+      hash = cloud_server.to_hash
+      hash.delete(:role)
+      hash.delete(:name)
+      set_attributes(hash)
     end
 
     def cloud_config
@@ -66,7 +68,17 @@ module Plover
     end
 
     def to_hash
-      {:server_id => server_id, :dns_name => dns_name, :role => role, :name => name, :external_ip => external_ip, :internal_ip => internal_ip, :state => state}
+      {
+        :server_id   => server_id,
+        :flavor_id   => flavor_id,
+        :image_id    => image_id,
+        :dns_name    => dns_name,
+        :role        => role,
+        :name        => name,
+        :external_ip => external_ip,
+        :internal_ip => internal_ip,
+        :state       => state
+      }
     end
 
     private
@@ -75,11 +87,6 @@ module Plover
       server_hash.each do |spec, value|
         send(spec.to_s+"=", value)
       end
-    end
-
-    def set_attributes_from_server_object(server)
-      hash = {:server => server.server_id, :flavor_id => server.flavor_id, :image_id => server.image_id, :dns_name => server.dns_name, :external_ip => server.ip_address, :internal_ip => server.private_ip_address, :state => server.state}
-      set_attributes(hash)
     end
 
     def cloud_server

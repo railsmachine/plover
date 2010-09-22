@@ -13,7 +13,7 @@ describe Plover::Server do
     server.class.should == Plover::Server
   end
   
-  it "should set attr_accessors from the specs hash on instanciation" do
+  it "should set attr_accessors from the specs hash on instantiation" do
     server = Plover::Server.new({:role => "app"})
     server.role.should == "app"
   end

@@ -5,6 +5,7 @@ end
 
 require 'erb'
 require 'yaml'
+require 'pathname'
 module Plover
 
   autoload :Files,      'plover/files'
