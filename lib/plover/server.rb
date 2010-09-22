@@ -45,8 +45,11 @@ module Plover
     end
 
     def update_once_running
-      @booting_server.wait_for { ready? } if @booting_server
-      @state = 'running'
+      if @booting_server
+        @booting_server.wait_for { ready? }
+        @server_id = @booting_server.id
+        @state = 'running'
+      end
       update_from_running
     end
 
