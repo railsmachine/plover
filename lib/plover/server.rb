@@ -14,7 +14,7 @@ module Plover
       if running?
         false
       else
-        @fog_server = Plover::Connection.connection.servers.create(:flavor_id => flavor_id, :image_id => image_id, :groups => groups, :user_data => cloud_config)
+        @fog_server = Plover.connection.servers.create(:flavor_id => flavor_id, :image_id => image_id, :groups => groups, :user_data => cloud_config)
         true
       end
     end
@@ -70,7 +70,7 @@ module Plover
     end
     
     def ec2_server
-      Plover::Connection.connection.servers.get(server_id)
+      Plover.connection.servers.get(server_id)
     end
     
   end

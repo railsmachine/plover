@@ -28,12 +28,12 @@ describe Plover::Server do
         server.should be_running
       end
       it "should not start an instance if one is started" do
-        Plover::Connection.connection.servers.expects(:create).never
+        Plover.connection.servers.expects(:create).never
         server = Plover::Server.new({:name => "abc", :image_id => "ami-12345"})
         server.boot.should be_false
       end
       it "should start an instance if one isn't started" do
-        Plover::Connection.connection.servers.get.expects(:destroy)
+        Plover.connection.servers.get.expects(:destroy)
         server = Plover::Server.new({:name => "abc", :image_id => "ami-12345"})
         server.shutdown
       end
@@ -51,7 +51,7 @@ describe Plover::Server do
         server.should_not be_running
       end
       it ".boot? should start an instance if one isn't started" do
-        Plover::Connection.connection.servers.expects(:create)
+        Plover.connection.servers.expects(:create)
         server = Plover::Server.new({:name => "abc", :image_id => "ami-12345"})
         server.boot.should be_true
       end

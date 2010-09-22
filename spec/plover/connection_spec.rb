@@ -4,7 +4,7 @@ describe Plover::Connection do
 
   it "should raise an error when accessing connection before establishing" do
     lambda {
-      Plover::Connection.connection
+      Plover.connection
     }.should raise_error(Plover::Connection::NotConnected)
   end
 

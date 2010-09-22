@@ -22,8 +22,8 @@ describe Plover::Servers do
         @servers.server_list.each do |server|
           server.expects(:update_once_running)
         end
-        Plover::Connection.connection.servers.expects(:create).with(:flavor_id => "m1.small", :image_id => 1, :groups => ["default", "ssh", "riak"], :user_data => File.read("config/cloud-config.txt"))
-        Plover::Connection.connection.servers.expects(:create).with(:flavor_id => "m1.small", :image_id => 1, :groups => ["default", "ssh", "app"], :user_data => File.read("config/cloud-config.txt"))
+        Plover.connection.servers.expects(:create).with(:flavor_id => "m1.small", :image_id => 1, :groups => ["default", "ssh", "riak"], :user_data => File.read("config/cloud-config.txt"))
+        Plover.connection.servers.expects(:create).with(:flavor_id => "m1.small", :image_id => 1, :groups => ["default", "ssh", "app"], :user_data => File.read("config/cloud-config.txt"))
         @servers.provision
       end
     end
@@ -42,8 +42,8 @@ describe Plover::Servers do
         @servers.server_list.each do |server|
           server.expects(:update_once_running)
         end
-        Plover::Connection.connection.servers.expects(:create).with(:flavor_id => "m1.small", :image_id => 1, :groups => ["default"], :user_data => File.read("config/cloud-config.txt"))
-        Plover::Connection.connection.servers.expects(:create).with(:flavor_id => "m1.small", :image_id => 1, :groups => ["default"], :user_data => File.read("config/cloud-config.txt"))
+        Plover.connection.servers.expects(:create).with(:flavor_id => "m1.small", :image_id => 1, :groups => ["default"], :user_data => File.read("config/cloud-config.txt"))
+        Plover.connection.servers.expects(:create).with(:flavor_id => "m1.small", :image_id => 1, :groups => ["default"], :user_data => File.read("config/cloud-config.txt"))
         @servers.provision
       end
     end

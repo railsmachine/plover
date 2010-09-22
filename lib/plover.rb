@@ -10,4 +10,9 @@ module Plover
   autoload :Connection, 'plover/connection'
   autoload :Servers,    'plover/servers'
   autoload :Server,     'plover/server'
+
+  def self.connection
+    Connection.connection
+  end
+
 end
