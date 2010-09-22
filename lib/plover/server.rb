@@ -37,11 +37,7 @@ module Plover
     end
 
     def state
-      if cloud_server.nil?
-        @state || "not found"
-      else
-        @state || cloud_server.state
-      end
+      @state || (cloud_server.nil? ? 'not found' : cloud_server.state)
     end
 
     def shutdown
@@ -50,7 +46,7 @@ module Plover
 
     def update_once_running
       @booting_server.wait_for { ready? } if @booting_server
-      @state = nil
+      @state = 'running'
       update_from_running
     end
 

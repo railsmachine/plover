@@ -70,9 +70,8 @@ module Plover
     end
 
     def save_server_info
-      File.open(self.class.file_root.join('config/plover_servers.yml'), 'w') do |out|
-        out.write(server_list.map(&:to_hash).to_yaml)
-      end
+      yml = server_list.map(&:to_hash).to_yaml
+      File.open(self.class.file_root.join('config/plover_servers.yml'), 'w') { |f| f.write(yml) }
     end
 
   end
