@@ -1,21 +1,24 @@
 module Plover
-  
+
   class Server
-    
-    attr_accessor :server_id, :name, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id, :groups, :group
-    
+
+    attr_accessor :server_id, :name, :state, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id, :groups, :group
+
     def initialize(server_specs)
       @specs = server_specs
-      @fog_server = nil
       set_attributes(@specs)
     end
-    
+
     def boot
-      if running?
-        false
-      else
-        @fog_server = Plover.connection.servers.create(:flavor_id => flavor_id, :image_id => image_id, :groups => groups, :user_data => cloud_config)
-        true
+      begin
+        unless state == 'running' || state == 'booting'
+          @state = 'booting'
+          @booting_server = Plover.connection.servers.create(:flavor_id => flavor_id, :image_id => image_id, :groups => groups, :user_data => cloud_config)
+          true
+        end
+      rescue Exception => e
+        @state = 'exception'
+        raise e
       end
     end
 
@@ -25,54 +28,64 @@ module Plover
       (Plover::Connection.groups + server_groups)
     end
 
-    def running?
-      ec2_server.state == "running" unless ec2_server.nil?
+    def booting?
+      state == 'booting' && cloud_server.nil?
     end
-    
+
+    def running?
+      cloud_server.state == "running" unless cloud_server.nil?
+    end
+
     def state
-      if ec2_server.nil?
-        "not found"
+      puts @state
+      if cloud_server.nil?
+        @state || "not found"
       else
-        ec2_server.state
+        @state || cloud_server.state
       end
     end
-    
+
     def shutdown
-      ec2_server.destroy
+      cloud_server.destroy
     end
-    
+
     def update_once_running
-      @fog_server.wait_for { ready? }
-      set_attributes_from_server_object(@fog_server)
+      @booting_server.wait_for { ready? }
+      @state = nil
+      update_from_running
     end
-    
+
     def update_from_running
-      set_attributes_from_server_object(ec2_server)
+      set_attributes_from_server_object(cloud_server)
     end
-    
+
     def cloud_config
       b = binding
       @cloud_config = ERB.new(File.read("config/cloud-config.txt"))
       @cloud_config.result(b)
     end
-    
+
+    def to_hash
+      {:server_id => server_id, :dns_name => dns_name, :role => role, :name => name, :external_ip => external_ip, :internal_ip => internal_ip, :state => state}
+    end
+
     private
-    
+
     def set_attributes(server_hash)
       server_hash.each do |spec, value|
         send(spec.to_s+"=", value)
       end
     end
-    
+
     def set_attributes_from_server_object(server)
-      hash = {:server_id => server.id, :flavor_id => server.flavor_id, :image_id => server.image_id, :dns_name => server.dns_name, :external_ip => server.ip_address, :internal_ip => server.private_ip_address}
+      hash = {:server => server.server_id, :flavor_id => server.flavor_id, :image_id => server.image_id, :dns_name => server.dns_name, :external_ip => server.ip_address, :internal_ip => server.private_ip_address, :state => server.state}
       set_attributes(hash)
     end
-    
-    def ec2_server
+
+    def cloud_server
       Plover.connection.servers.get(server_id)
     end
-    
+
   end
-  
+
 end
