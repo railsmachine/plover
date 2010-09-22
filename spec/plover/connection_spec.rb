@@ -13,7 +13,12 @@ describe Plover::Connection do
       Plover::Connection.establish_connection
     }.should raise_error(ArgumentError)
   end
-  
+
+  it "should be able to connect from the yaml file" do
+    Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key').returns(true)
+    Plover::Connection.establish_connection_with_config_file("#{File.dirname(__FILE__)}/../../config/plover.yml")
+  end
+
   it "should create an ec2 connection when given a proper username and api key" do
     Fog::AWS::EC2.expects(:new).with(:aws_access_key_id => 'user', :aws_secret_access_key => 'key').returns(true)
     Plover::Connection.establish_connection('aws_access_key_id' => 'user', 'aws_secret_access_key' => 'key')

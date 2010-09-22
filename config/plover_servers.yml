@@ -1,0 +1,13 @@
+--- 
+- :server_id: 
+  :external_ip: 
+  :dns_name: 
+  :internal_ip: 
+  :name: 
+  :role: 
+- :server_id: 
+  :external_ip: 
+  :dns_name: 
+  :internal_ip: 
+  :name: 
+  :role: 
