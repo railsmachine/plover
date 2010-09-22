@@ -55,10 +55,12 @@ module Plover
     end
 
     def update_from_running
-      hash = cloud_server.to_hash
-      hash.delete(:role)
-      hash.delete(:name)
-      set_attributes(hash)
+      if cloud_server
+        hash = cloud_server.to_hash
+        hash.delete(:role)
+        hash.delete(:name)
+        set_attributes(hash)
+      end
     end
 
     def cloud_config
