@@ -4,21 +4,8 @@ set :rails_root, Pathname.new(ENV['RAILS_ROOT'] || Dir.pwd)
 set :plover_yml_path, rails_root.join('config', 'plover.yml')
 set :plover_cloud_config_path, rails_root.join('config', 'cloud-config.txt')
 
-set :plover_yml do
-  if plover_yml_path.exist?
-    require 'yaml'
-    YAML::load(plover_yml_path.read)
-  else
-    puts "Missing #{plover_yml_path}"
-    exit(1)
-  end
-end
-
 desc "[internal]: populate capistrano with settings from plover.yml"
 task :configure_plover do
-  plover_yml.each do |key, value|
-    set key.to_sym, value
-  end
   Plover::Connection.establish_connection_with_config_file(plover_yml_path)
 end
 
