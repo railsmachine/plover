@@ -32,14 +32,15 @@ module Plover
       request_info
     end
 
+
     def request_bootup
       @servers.each do |server|
         begin
           server.boot
+          puts server.to_s
         ensure
           save_server_info
         end
-        puts "Requested bootup for #{server.name}"
       end
     end
 
@@ -47,10 +48,10 @@ module Plover
       @servers.each do |server|
         begin
           server.update_once_running
+          puts server.to_s
         ensure
           save_server_info
         end
-        puts "Server #{server.name} is running as #{server.server_id}"
       end
     end
 

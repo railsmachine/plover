@@ -107,6 +107,26 @@ describe Plover::Servers do
 
     end
 
+    describe "when a server immediately terminates" do
+      before :each do
+        @servers = Plover::Servers.new([{:name => 'test_terminated', :role => 'test', :image_id => 1, :flavor_id => "m1.small"}])
+        @servers.request_bootup
+        new_data = {"instanceState"=>{"name"=>"terminated", "code"=>0}, "reason"=>"Server.InternalError"}
+        instance_id, instance_data = Fog::AWS::Compute::Mock.data["user"][:instances].first
+        new_instance_data = instance_data.merge(new_data)
+        mock_data = Fog::AWS::Compute::Mock.data
+        mock_data["user"][:instances] = {instance_id => new_instance_data }
+        Fog::AWS::Compute::Mock.instance_variable_set("@data", mock_data)
+      end
+
+      it "should detect server has terminated" do
+        @servers.request_info
+        @servers.server_list.first.state.should == 'terminated'
+        @servers.server_list.first.reason.should == 'Server.InternalError'
+      end
+
+    end
+
   end
 
 end

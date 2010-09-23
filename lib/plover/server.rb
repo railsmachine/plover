@@ -2,7 +2,9 @@ module Plover
 
   class Server
 
-    attr_accessor :server_id, :name, :state, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id, :groups, :group
+    class ImmediatelyTerminatedError < StandardError; end
+
+    attr_accessor :server_id, :name, :state, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id, :groups, :group, :reason
 
     def initialize(server_specs)
       @specs = server_specs
@@ -48,8 +50,15 @@ module Plover
 
     def update_once_running
       if @booting_server
-        @booting_server.wait_for { ready? }
-        @state = 'running'
+        begin
+          @booting_server.wait_for do
+            ready? || (raise Plover::Server::ImmediatelyTerminatedError if state == 'terminated')
+          end
+        rescue Plover::Server::ImmediatelyTerminatedError
+          @state = 'terminated'
+        else
+          @state = 'running'
+        end
       else
         @state = nil
       end
@@ -67,7 +76,8 @@ module Plover
           :dns_name    => cloud_server.dns_name,
           :external_ip => cloud_server.ip_address,
           :internal_ip => cloud_server.private_ip_address,
-          :state       => cloud_server.state
+          :state       => cloud_server.state,
+          :reason      => cloud_server.reason
         })
       end
     end
@@ -88,8 +98,13 @@ module Plover
         :name        => name,
         :external_ip => external_ip,
         :internal_ip => internal_ip,
-        :state       => state
+        :state       => state,
+        :reason      => reason
       }
+    end
+
+    def to_s
+      "Server #{name} is #{state} as #{server_id}"
     end
 
     private
