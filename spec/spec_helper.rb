@@ -16,14 +16,9 @@ Spec::Runner.configure do |config|
     files[file] = File.read(file)
   end
   FakeFS.activate!
+  Fog.mock!
   files.each do |name, contents|
     stripped_name = name.gsub("#{File.dirname(__FILE__)}\/", '')
     File.open(stripped_name, 'w') { |f| f.write(contents) }
   end
-end
-
-def stub_fog(response = {})
-  servers = stub(:get => stub(response))
-  connection = stub(:servers => servers)
-  Plover.expects(:connection).at_least_once.returns(connection)
 end

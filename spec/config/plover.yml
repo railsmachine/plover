@@ -1,2 +1,2 @@
-aws_access_key_id: user
+aws_access_key_id: <%= 'from_erb' %>
 aws_secret_access_key: <%= 'key' %>

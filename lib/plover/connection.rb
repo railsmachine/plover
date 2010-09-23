@@ -12,7 +12,7 @@ module Plover
 
       def establish_connection(config)
         @config = config
-        @connection = Fog::AWS::EC2.new(:aws_access_key_id => config['aws_access_key_id'], :aws_secret_access_key => config['aws_secret_access_key'], :region => region)
+        @connection = Fog::AWS::Compute.new(:aws_access_key_id => config['aws_access_key_id'], :aws_secret_access_key => config['aws_secret_access_key'], :region => region)
       end
 
       def establish_connection_with_config_file(path)

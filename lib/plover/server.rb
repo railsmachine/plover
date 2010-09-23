@@ -14,6 +14,7 @@ module Plover
         unless state == 'running' || state == 'booting'
           @state = 'booting'
           @booting_server = Plover.connection.servers.create(:flavor_id => flavor_id, :image_id => image_id, :groups => groups, :user_data => cloud_config)
+          @server_id = @booting_server.id
           true
         end
       rescue Exception => e
@@ -42,23 +43,32 @@ module Plover
 
     def shutdown
       cloud_server.destroy
+      update_from_running
     end
 
     def update_once_running
       if @booting_server
         @booting_server.wait_for { ready? }
-        @server_id = @booting_server.id
         @state = 'running'
+      else
+        @state = nil
       end
       update_from_running
     end
 
+    alias_method :reload, :update_once_running
+
     def update_from_running
       if cloud_server
-        hash = cloud_server.to_hash
-        hash.delete(:role)
-        hash.delete(:name)
-        set_attributes(hash)
+        set_attributes({
+          :server_id   => cloud_server.id,
+          :flavor_id   => cloud_server.flavor_id,
+          :image_id    => cloud_server.image_id,
+          :dns_name    => cloud_server.dns_name,
+          :external_ip => cloud_server.ip_address,
+          :internal_ip => cloud_server.private_ip_address,
+          :state       => cloud_server.state
+        })
       end
     end
 

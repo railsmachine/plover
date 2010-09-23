@@ -28,6 +28,11 @@ module Plover
     end
 
     def provision
+      request_bootup
+      request_info
+    end
+
+    def request_bootup
       @servers.each do |server|
         begin
           server.boot
@@ -36,6 +41,9 @@ module Plover
         end
         puts "Requested bootup for #{server.name}"
       end
+    end
+
+    def request_info
       @servers.each do |server|
         begin
           server.update_once_running
