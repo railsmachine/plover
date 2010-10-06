@@ -16,10 +16,12 @@ describe Plover::Server do
     server = Plover::Server.new({:image_id => 1, :flavor_id => "m1.small"})
     server.class.should == Plover::Server
   end
-
-  it "should set attr_accessors from the specs hash on instantiation" do
-    server = Plover::Server.new({:role => "app"})
-    server.role.should == "app"
+  
+  [:server_id, :name, :state, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id, :group, :reason, :options].each do |setting|
+    it "should set #{setting} from the specs hash on instantiation" do
+      server = Plover::Server.new({setting => "test"})
+      server.send(setting).should == "test"
+    end
   end
 
   describe "with a valid connection " do

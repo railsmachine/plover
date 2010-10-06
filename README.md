@@ -24,11 +24,15 @@ Plover uses a simple yaml file (config/plover.yml) to configure options, here is
       role: db
       name: db1.staging.railsmachine.com
       group: db
+      options:
+        primary: true
     - flavor_id: m1.small
       image_id: ami-2d4aa444
       role: db
       name: db2.staging.railsmachine.com
       group: db
+      options:
+        slave: true
     - flavor_id: m1.small
       image_id: ami-2d4aa444
       role: app
