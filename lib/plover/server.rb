@@ -4,7 +4,7 @@ module Plover
 
     class ImmediatelyTerminatedError < StandardError; end
 
-    attr_accessor :server_id, :name, :state, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id, :groups, :group, :reason
+    attr_accessor :server_id, :name, :state, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id, :groups, :group, :reason, :options
 
     def initialize(server_specs)
       @specs = server_specs
@@ -99,7 +99,8 @@ module Plover
         :external_ip => external_ip,
         :internal_ip => internal_ip,
         :state       => state,
-        :reason      => reason
+        :reason      => reason,
+        :options     => options
       }
     end
 

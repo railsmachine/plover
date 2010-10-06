@@ -13,7 +13,11 @@ desc "[internal]: populate capistrano with settings from plover_servers.yml"
 task :configure_plover_roles do
   configure_plover
   Plover::Connection.server_list.each do |server|
-    role server.role.to_sym, server.dns_name
+    if server.options.nil?
+      role server.role.to_sym, server.dns_name
+    else
+      role server.role.to_sym, server.dns_name, server.options
+    end
   end
 end
 
@@ -39,7 +43,6 @@ namespace :plover do
   
   desc "List servers at EC2 using Plover"
   task :list_roles do
-    configure_plover
     configure_plover_roles
     puts "Roles: #{roles.inspect}"
   end
