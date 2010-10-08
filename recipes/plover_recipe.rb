@@ -1,12 +1,13 @@
 require  File.join(File.dirname(__FILE__), '../lib/plover')
 require 'pathname'
-set :rails_root, Pathname.new(ENV['RAILS_ROOT'] || Dir.pwd)
-set :plover_yml_path, rails_root.join('config', 'plover.yml')
-set :plover_cloud_config_path, rails_root.join('config', 'cloud-config.txt')
 
 desc "[internal]: populate capistrano with settings from plover.yml"
 task :configure_plover do
-  Plover::Connection.establish_connection_with_config_file(plover_yml_path)
+  Plover.file_root                  = Pathname.new(ENV['RAILS_ROOT'] || Dir.pwd)
+  Plover.cloud_config_path          = fetch(:cloud_config_path, nil)
+  Plover.plover_config_path         = fetch(:plover_config_path, nil)
+  Plover.plover_servers_config_path = fetch(:plover_servers_config_path, nil)
+  Plover::Connection.establish_connection
 end
 
 desc "[internal]: populate capistrano with settings from plover_servers.yml"
@@ -45,11 +46,6 @@ namespace :plover do
   task :list_roles do
     configure_plover_roles
     puts "Roles: #{roles.inspect}"
-  end
-  
-  desc "Upload plover_servers.yml to the EC2 servers"
-  task :upload_server_yaml do
-    upload("config/plover_servers.yml", "#{current_release}/config/plover_servers.yml")
   end
   
   desc "Shutdown servers at EC2 using Plover"

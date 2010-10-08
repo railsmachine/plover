@@ -84,7 +84,7 @@ module Plover
 
     def cloud_config
       b = binding
-      @cloud_config = ERB.new(File.read("config/cloud-config.txt"))
+      @cloud_config = ERB.new(Plover.cloud_config_path)
       @cloud_config.result(b)
     end
 

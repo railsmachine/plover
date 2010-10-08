@@ -13,13 +13,13 @@ describe Plover::Connection do
 
   it "should raise an error when missing a username and api key" do
     lambda {
-      Plover::Connection.establish_connection
+      Plover::Connection.establish_connection({})
     }.should raise_error(ArgumentError)
   end
 
   it "should be able to connect from the yaml file" do
     Fog::AWS::Compute.expects(:new).with(:aws_access_key_id => 'from_erb', :aws_secret_access_key => 'key', :region => 'us-east-1').returns(true)
-    Plover::Connection.establish_connection_with_config_file("config/plover.yml")
+    Plover::Connection.establish_connection
   end
 
   it "should create an ec2 connection when given a proper username and api key" do

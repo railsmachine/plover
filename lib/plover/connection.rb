@@ -10,13 +10,9 @@ module Plover
 
       attr_reader :config, :region
 
-      def establish_connection(config)
-        @config = config
-        @connection = Fog::AWS::Compute.new(:aws_access_key_id => config['aws_access_key_id'], :aws_secret_access_key => config['aws_secret_access_key'], :region => region)
-      end
-
-      def establish_connection_with_config_file(path)
-        establish_connection(YAML.load(ERB.new(File.read(path)).result))
+      def establish_connection(hash = nil)
+        @config = hash || YAML.load(ERB.new(File.read(Plover.plover_config_path)).result)
+        @connection = Fog::AWS::Compute.new(:aws_access_key_id => @config['aws_access_key_id'], :aws_secret_access_key => @config['aws_secret_access_key'], :region => region)
       end
 
       def region

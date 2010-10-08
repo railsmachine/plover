@@ -2,10 +2,6 @@ module Plover
 
   class Servers
 
-    def self.file_root
-      Pathname.new(ENV['RAILS_ROOT'] || Dir.pwd)
-    end
-
     def initialize(server_specs = [])
       @server_specs ||= server_specs
       if server_specs.empty?
@@ -70,9 +66,8 @@ module Plover
     private
 
     def load_server_info
-      plover_servers_yml_path = self.class.file_root.join("config", "plover_servers.yml")
-      if File.exist?(plover_servers_yml_path)
-        YAML::load_file(plover_servers_yml_path)
+      if File.exist?(Plover.plover_servers_config_path)
+        YAML::load_file(Plover.plover_servers_config_path)
       else
         []
       end
@@ -80,7 +75,7 @@ module Plover
 
     def save_server_info
       yml = server_list.map(&:to_hash).to_yaml
-      File.open(self.class.file_root.join('config/plover_servers.yml'), 'w') { |f| f.write(yml) }
+      File.open(Plover.plover_servers_config_path, 'w') { |f| f.write(yml) }
     end
 
   end
