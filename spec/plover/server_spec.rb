@@ -17,7 +17,7 @@ describe Plover::Server do
     server.class.should == Plover::Server
   end
   
-  [:server_id, :name, :state, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id, :group, :reason, :options].each do |setting|
+  [:server_id, :name, :state, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id, :group, :reason, :options, :availability_zone].each do |setting|
     it "should set #{setting} from the specs hash on instantiation" do
       server = Plover::Server.new({setting => "test"})
       server.send(setting).should == "test"

@@ -25,6 +25,23 @@ describe Plover::Servers do
   end
 
   describe 'provisioning' do
+    describe "with customized availibility_zones" do
+      before :each do
+        @servers = Plover::Servers.new([
+          {:name => 'foo1', :image_id => 1, :flavor_id => "m1.small", :availability_zone => 'us-east-1b'},
+          {:name => 'foo2', :image_id => 1, :flavor_id => "m1.small"}
+        ])
+      end
+
+      it 'provisions servers in the specified security groups' do
+        response = Plover.connection.run_instances(1, 1, 1, {'SecurityGroup' => ['default'], 'RamdiskId' => nil, 'BlockDeviceMapping' => nil, 'UserData' => '#cloud-config\n', 'KeyName' => nil, 'KernelId' => nil, 'Monitoring.Enabled' => nil, 'InstanceType' => 'm1.small', 'Placement.AvailabilityZone' => nil})
+        Plover.connection.expects(:run_instances).with { |_,_,_,options| options['Placement.AvailabilityZone'].include?('us-east-1b') }.returns(response)
+        Plover.connection.expects(:run_instances).with { |_,_,_,options| options['Placement.AvailabilityZone'].include?('us-east-1a') }.returns(response)
+        @servers.provision
+      end
+    end
+
+
     describe "with customized security groups" do
       before :each do
         @servers = Plover::Servers.new([

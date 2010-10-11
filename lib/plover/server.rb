@@ -4,7 +4,7 @@ module Plover
 
     class ImmediatelyTerminatedError < StandardError; end
 
-    attr_accessor :server_id, :name, :state, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id, :groups, :group, :reason, :options
+    attr_accessor :server_id, :name, :state, :dns_name, :role, :name, :external_ip, :internal_ip, :flavor_id, :image_id, :groups, :group, :reason, :options, :availability_zone
 
     def initialize(server_specs)
       @specs = server_specs
@@ -15,7 +15,7 @@ module Plover
       begin
         unless state == 'running' || state == 'booting'
           @state = 'booting'
-          @booting_server = Plover.connection.servers.create(:flavor_id => flavor_id, :image_id => image_id, :groups => groups, :user_data => cloud_config)
+          @booting_server = Plover.connection.servers.create(:flavor_id => flavor_id, :image_id => image_id, :groups => groups, :user_data => cloud_config, :availability_zone => availability_zone)
           @server_id = @booting_server.id
           true
         end
@@ -37,6 +37,10 @@ module Plover
 
     def running?
       cloud_server.state == "running" unless cloud_server.nil?
+    end
+
+    def availability_zone
+      @availability_zone || (Plover::Connection.region + 'a')
     end
 
     def state
@@ -70,14 +74,15 @@ module Plover
     def update_from_running
       if cloud_server
         set_attributes({
-          :server_id   => cloud_server.id,
-          :flavor_id   => cloud_server.flavor_id,
-          :image_id    => cloud_server.image_id,
-          :dns_name    => cloud_server.dns_name,
-          :external_ip => cloud_server.ip_address,
-          :internal_ip => cloud_server.private_ip_address,
-          :state       => cloud_server.state,
-          :reason      => cloud_server.reason
+          :server_id          => cloud_server.id,
+          :flavor_id          => cloud_server.flavor_id,
+          :image_id           => cloud_server.image_id,
+          :dns_name           => cloud_server.dns_name,
+          :external_ip        => cloud_server.ip_address,
+          :internal_ip        => cloud_server.private_ip_address,
+          :state              => cloud_server.state,
+          :reason             => cloud_server.reason,
+          :availability_zone  => cloud_server.availability_zone
         })
       end
     end
@@ -90,17 +95,18 @@ module Plover
 
     def to_hash
       {
-        :server_id   => server_id,
-        :flavor_id   => flavor_id,
-        :image_id    => image_id,
-        :dns_name    => dns_name,
-        :role        => role,
-        :name        => name,
-        :external_ip => external_ip,
-        :internal_ip => internal_ip,
-        :state       => state,
-        :reason      => reason,
-        :options     => options
+        :server_id          => server_id,
+        :flavor_id          => flavor_id,
+        :image_id           => image_id,
+        :dns_name           => dns_name,
+        :role               => role,
+        :name               => name,
+        :external_ip        => external_ip,
+        :internal_ip        => internal_ip,
+        :state              => state,
+        :reason             => reason,
+        :options            => options,
+        :availability_zone  => availability_zone
       }
     end
 
