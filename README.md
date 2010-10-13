@@ -60,3 +60,7 @@ Once it is configured, Plover is very easy to use.
 and
 
 `cap plover:shutdown`
+
+### License
+
+Plover is released under the MIT license.
