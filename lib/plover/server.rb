@@ -75,14 +75,11 @@ module Plover
       if cloud_server
         set_attributes({
           :server_id          => cloud_server.id,
-          :flavor_id          => cloud_server.flavor_id,
-          :image_id           => cloud_server.image_id,
           :dns_name           => cloud_server.dns_name,
           :external_ip        => cloud_server.ip_address,
           :internal_ip        => cloud_server.private_ip_address,
           :state              => cloud_server.state,
-          :reason             => cloud_server.reason,
-          :availability_zone  => cloud_server.availability_zone
+          :reason             => cloud_server.reason
         })
       end
     end
