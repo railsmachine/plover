@@ -64,3 +64,7 @@ and
 ### License
 
 Plover is released under the MIT license.
+
+***
+
+Unless otherwise specified, all content copyright &copy; 2014, [Rails Machine, LLC](http://railsmachine.com)
